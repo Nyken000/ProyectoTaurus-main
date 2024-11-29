@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Mi Perfil</h2>
+
+    <!-- Información del usuario -->
+    <div class="card mx-auto mb-4" style="max-width: 600px;">
+        <div class="card-body">
+            <h5 class="card-title text-center">Información del Usuario</h5>
+            <p><strong>Nombre de usuario:</strong> {{ usuario.username }}</p>
+            <p><strong>Correo electrónico:</strong> {{ usuario.email }}</p>
+            {% if usuario.first_name or usuario.last_name %}
+            <p><strong>Nombre completo:</strong> {{ usuario.first_name }} {{ usuario.last_name }}</p>
+            {% endif %}
+            <p><strong>Rol:</strong> {{ usuario.rol|title }}</p>
+            {% if usuario.date_joined %}
+            <p><strong>Fecha de registro:</strong> {{ usuario.date_joined|date:"d/m/Y H:i" }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Botón para editar -->
+    <div class="text-center mt-4">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">Editar Perfil</button>
+    </div>
+</div>
+
+<!-- Modal para editar perfil -->
+<div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarPerfilModalLabel">Editar Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- SweetAlert -->
+<!-- <script src="{% static 'js/sweetalert2.min.js' %}"></script>
+<script>
+    // Mostrar la alerta si los cambios fueron guardados
+    {% if cambios_guardados %}
+    Swal.fire({
+        title: '¡Éxito!',
+        text: 'Tu perfil ha sido actualizado correctamente.',
+        icon: 'success',
+        confirmButtonText: 'Aceptar'
+    });
+    {% endif %} -->
+<!-- </script> -->
+{% endblock %}

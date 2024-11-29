@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Notificaciones{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Lista de Notificaciones</h2>
+    {% if notificaciones %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Mensaje</th>
+                <th>Fecha</th>
+                <th>Leída</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for notificacion in notificaciones %}
+            <tr>
+                <td>{{ notificacion.id }}</td>
+                <td>{{ notificacion.usuario.username }}</td>
+                <td>{{ notificacion.mensaje }}</td>
+                <td>{{ notificacion.fecha_creacion }}</td>
+                <td>{{ notificacion.leida|yesno:"Sí,No" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay notificaciones disponibles.</p>
+    {% endif %}
+</div>
+{% endblock %}

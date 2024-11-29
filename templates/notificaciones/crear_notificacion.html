@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Notificación{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Crear Notificación</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="usuario_id" class="form-label">Usuario</label>
+            <select id="usuario_id" name="usuario_id" class="form-control" required>
+                <option value="">Seleccionar usuario</option>
+                {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}">{{ usuario.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="mensaje" class="form-label">Mensaje</label>
+            <textarea id="mensaje" name="mensaje" class="form-control" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Crear Notificación</button>
+    </form>
+</div>
+{% endblock %}

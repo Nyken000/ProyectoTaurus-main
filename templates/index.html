@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio | Proyecto Taurus{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <form method="GET" action="{% url 'home' %}" onsubmit="return validarPrecios()">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="¿Qué desea encontrar?" value="{{ request.GET.q }}">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <h4>Categorías</h4>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a href="?categoria=all" class="text-decoration-none">Todas</a>
+                </li>
+                {% for categoria in categorias %}
+                <li class="list-group-item">
+                    <a href="?categoria={{ categoria.id }}" class="text-decoration-none">{{ categoria.nombre }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <h4 class="mt-4">Precio</h4>
+            <form method="GET" action="{% url 'home' %}" onsubmit="return validarPrecios()">
+                <div class="d-flex align-items-center">
+                    <input 
+                        type="number" 
+                        id="min" 
+                        name="min" 
+                        class="form-control" 
+                        placeholder="Mín" 
+                        style="width: 80px;" 
+                        value="{{ request.GET.min }}" 
+                        min="0">
+                    <span class="mx-2">-</span>
+                    <input 
+                        type="number" 
+                        id="max" 
+                        name="max" 
+                        class="form-control" 
+                        placeholder="Máx" 
+                        style="width: 80px;" 
+                        value="{{ request.GET.max }}" 
+                        min="0">
+                </div>
+                <button class="btn btn-secondary mt-2" type="submit">Filtrar</button>
+            </form>
+        </div>
+
+        <div class="col-md-9">
+            {% if productos %}
+            <div class="row">
+                {% for producto in productos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100" data-bs-toggle="modal" data-bs-target="#productoModal{{ producto.id }}" style="cursor: pointer;">
+                        {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <img src="{% static 'img/default.png' %}" class="card-img-top" alt="Imagen no disponible" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ producto.nombre }}</h5>
+                            <p class="text-muted">Precio: ${{ producto.precio }}</p>
+                            <p class="text-muted">Stock: {{ producto.stock }}</p>
+
+                            {% if producto.stock > 0 %}
+                            <a href="{% url 'agregar_al_carrito' producto.id %}" class="btn btn-success btn-sm">Añadir al carrito</a>
+                            {% else %}
+                            <button class="btn btn-danger btn-sm" disabled>No disponible</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de Producto -->
+                <div class="modal fade" id="productoModal{{ producto.id }}" tabindex="-1" aria-labelledby="productoModalLabel{{ producto.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="productoModalLabel{{ producto.id }}">{{ producto.nombre }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% if producto.imagen %}
+                                <img src="{{ producto.imagen.url }}" class="img-fluid mb-3" alt="{{ producto.nombre }}">
+                                {% endif %}
+                                <p><strong>Precio:</strong> ${{ producto.precio }}</p>
+                                <p><strong>Stock:</strong> {{ producto.stock }}</p>
+                                <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+                            </div>
+                            <div class="modal-footer">
+                                {% if producto.stock > 0 %}
+                                <a href="{% url 'agregar_al_carrito' producto.id %}" class="btn btn-success">Añadir al carrito</a>
+                                {% else %}
+                                <button class="btn btn-danger" disabled>No disponible</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-center">No hay productos disponibles para esta selección.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function validarPrecios() {
+        const min = parseInt(document.getElementById('min').value, 10) || 0;
+        const max = parseInt(document.getElementById('max').value, 10) || 0;
+
+        if (min < 0 || max < 0) {
+            alert("El precio no puede ser negativo.");
+            return false;
+        }
+
+        if (min > max) {
+            alert("El precio máximo no puede ser menor que el precio mínimo.");
+            return false;
+        }
+
+        return true; // El formulario se envía solo si pasa las validaciones
+    }
+</script>
+{% endblock %}

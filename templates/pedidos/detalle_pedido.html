@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del Pedido{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Detalle del Pedido</h2>
+    <p><strong>ID del Pedido:</strong> {{ pedido.id }}</p>
+    <p><strong>Fecha:</strong> {{ pedido.fecha_creacion|date:"d M Y H:i" }}</p>
+    <p><strong>Estado:</strong> {{ pedido.estado|capfirst }}</p>
+    <p><strong>Total:</strong> ${{ pedido.total|intcomma }}</p>
+
+    <h3>Productos:</h3>
+    <ul class="list-group">
+        {% for item in pedido.items.all %}
+        <li class="list-group-item">
+            <strong>{{ item.producto.nombre }}</strong> - ${{ item.producto.precio|intcomma }} x {{ item.cantidad }} = ${{ item.total_item|intcomma }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

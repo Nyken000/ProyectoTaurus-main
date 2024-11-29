@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Inicio de sesión</title>
+</head>
+<body class="d-flex flex-column min-vh-100" style="background-image: url('ropa.png'); background-size: cover; background-position: center;">
+    <header style="background-color: #CDE8E5;" class="text-white text-center p-3">
+        <h1>Proyecto Taurus</h1>
+    </header>
+    <!-- Contenido principal -->
+    <div class="flex-grow-1 d-flex justify-content-center align-items-center" style="background-color: rgba(255, 255, 255, 0.8);">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                <!-- Card: Inicio de sesión -->
+                <div class="col-md-6">
+                    <div class="card shadow" style="border-radius: 10px;">
+                        <div class="card-body" style="background-color: #f1f6fb;">
+                            <h2 class="text-center mb-4">Inicio de sesión</h2>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Ingrese correo electrónico:</label>
+                                    <input type="text" id="username" name="username" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Ingrese contraseña:</label>
+                                    <input type="password" id="password" name="password" class="form-control" required>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <button type="submit" class="btn btn-primary">Continuar</button>
+                                    <!-- <button class="btn btn-secondary" onclick="location.href='{% url 'home' %}'">Menú Principal</button> -->
+                                    <button class="btn btn-secondary" onclick="window.location.href='/'">Menú Principal</button>
+                                </div>
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert {{ message.tags }} mt-3" style="background-color:#ff000046;">
+                                            {{ message }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card: Crear cuenta -->
+                <div class="col-md-4">
+                    <div class="card shadow text-center" style="border-radius: 10px; background-color: #d9e3ec;">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <p class="mb-3">¿No tiene una cuenta?</p>
+                            <a href="{% url 'registro' %}" class="btn btn-primary">Crear cuenta</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="text-center py-3 mt-auto" style="background-color: #7AB2B2; color: white;">
+        <p class="mb-0">Copyright © 2024-2024 (Importadora Taurus).</p>
+    </footer>
+</body>
+</html>

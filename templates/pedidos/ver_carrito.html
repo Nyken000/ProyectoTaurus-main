@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Carrito{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Carrito de Compras</h2>
+
+    {% if carrito.items.count > 0 %}
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in carrito.items.all %}
+            <tr>
+                <td>
+                    {% if item.producto.imagen %}
+                    <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                    {% endif %}
+                    {{ item.producto.nombre }}
+                </td>
+                <td>${{ item.producto.precio }}</td>
+                <td>
+                    <input 
+                        type="number" 
+                        class="form-control cantidad-input" 
+                        min="1" 
+                        value="{{ item.cantidad }}" 
+                        data-item-id="{{ item.id }}">
+                </td>
+                <td class="subtotal">${{ item.total_item }}</td>
+                <td>
+                    <form method="POST" action="{% url 'eliminar_item_carrito' item.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="text-end">Total</th>
+                <th id="total">${{ total }}</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+    {% else %}
+    <p class="text-center">Tu carrito está vacío.</p>
+    {% endif %}
+</div>
+
+<script>
+    function getCSRFToken() {
+        let cookieValue = null;
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('csrftoken=')) {
+                cookieValue = cookie.substring('csrftoken='.length, cookie.length);
+                break;
+            }
+        }
+        return cookieValue;
+    }
+
+    document.querySelectorAll('.cantidad-input').forEach(input => {
+        input.addEventListener('change', function () {
+            const itemId = this.dataset.itemId;
+            const nuevaCantidad = parseInt(this.value, 10);
+
+            if (nuevaCantidad <= 0) {
+                alert('La cantidad debe ser mayor que 0.');
+                this.value = 1;
+                return;
+            }
+
+            this.disabled = true;
+
+            fetch(`/pedidos/actualizar-cantidad/${itemId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                },
+                body: JSON.stringify({ cantidad: nuevaCantidad }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.closest('tr').querySelector('.subtotal').innerText = `$${data.subtotal}`;
+                    document.getElementById('total').innerText = `$${data.total}`;
+                } else {
+                    alert('Ocurrió un error al actualizar la cantidad.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('No se pudo actualizar la cantidad. Intenta nuevamente.');
+            })
+            .finally(() => {
+                this.disabled = false;
+            });
+        });
+    });
+</script>
+{% endblock %}

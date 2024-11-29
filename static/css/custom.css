@@ -1,0 +1,12 @@
+/* Estilo para enlaces activos */
+.nav-link.active {
+    background-color: #ff8800 !important; /* Cambia el color de fondo */
+    color: white !important;             /* Cambia el color del texto */
+    border-radius: 5px;                  /* Opcional: bordes redondeados */
+}
+
+/* Estilo para la barra lateral activa */
+.list-group-item.active {
+    background-color: #c4b9b9 !important; /* Cambia el color de fondo */
+    color: white !important;              /* Cambia el color del texto */
+}

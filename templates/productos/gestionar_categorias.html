@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestionar Categorías{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Gestión de Categorías</h2>
+    {% if es_admin %}
+    <!-- Formulario para crear nueva categoría -->
+    <div class="mt-4">
+        <h4>Crear Nueva Categoría</h4>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" name="nombre" class="form-control" placeholder="Nombre de la categoría" required>
+                <button class="btn btn-success" type="submit">Crear</button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+    <!-- Tabla de categorías existentes -->
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    {% if es_admin %}
+                    <th>Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ categoria.nombre }}</td>
+                    {% if es_admin %}
+                    <td>
+                        <!-- Botón para editar categoría -->
+                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editarCategoriaModal{{ categoria.id }}">Editar</button>
+
+                        <!-- Formulario para eliminar categoría -->
+                        <form method="POST" action="{% url 'eliminar_categoria' categoria.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta categoría?');">Eliminar</button>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+
+                <!-- Modal para editar categoría -->
+                <div class="modal fade" id="editarCategoriaModal{{ categoria.id }}" tabindex="-1" aria-labelledby="editarCategoriaLabel{{ categoria.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editarCategoriaLabel{{ categoria.id }}">Editar Categoría</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="{% url 'editar_categoria' categoria.id %}">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="nombreCategoria{{ categoria.id }}" class="form-label">Nombre de la Categoría</label>
+                                        <input type="text" name="nombre" id="nombreCategoria{{ categoria.id }}" value="{{ categoria.nombre }}" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

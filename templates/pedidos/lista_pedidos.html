@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Pedidos{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Mis Pedidos</h2>
+    <div class="alert alert-info">
+        <strong>Carrito ID:</strong> {{ cart_id }}<br>
+        <strong>Clave de Sesión:</strong> {{ session_key }}
+    </div>
+    {% if items %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.producto.nombre }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>${{ item.producto.precio|floatformat:0 }}</td>
+                <td>${{ item.total_item }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-warning">¡Tu carrito está vacío!</div>
+    {% endif %}
+    <a href="/" class="btn btn-primary">Seguir Comprando</a>
+</div>
+{% endblock %}
