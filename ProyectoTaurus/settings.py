@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+from decouple import config
 from pathlib import Path
 import os
 
@@ -25,6 +25,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/img')
 
 # Redirección para usuarios no autenticados
 LOGIN_URL = '/usuarios/login/'
+
+
+MERCADO_PAGO_PUBLIC_KEY = config("MERCADO_PAGO_PUBLIC_KEY")
+MERCADO_PAGO_ACCESS_TOKEN = config("MERCADO_PAGO_ACCESS_TOKEN")
 
 
 # Quick-start development settings - unsuitable for production

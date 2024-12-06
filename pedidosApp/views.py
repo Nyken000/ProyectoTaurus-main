@@ -6,7 +6,8 @@ from .models import Carrito, ItemCarrito
 from productosApp.models import Producto
 from math import floor
 from django.http import JsonResponse
-
+from django.conf import settings
+import mercadopago
 
 @login_required
 def ver_carrito(request):
@@ -77,3 +78,65 @@ def actualizar_cantidad(request, item_id):
             print("Error during actualizar_cantidad: ", str(e))
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Método no permitido.'})
+
+
+
+@login_required
+def checkout_pro(request):
+    try:
+        # SDK de Mercado Pago
+        sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN)
+
+        # Obtener el carrito del usuario
+        carrito = Carrito.objects.filter(usuario=request.user).first()
+        if not carrito or not carrito.items.exists():
+            messages.error(request, "Tu carrito está vacío.")
+            return redirect('ver_carrito')
+
+        # Crear preferencia de pago
+        preference_data = {
+            "items": [
+                {
+                    "title": item.producto.nombre,
+                    "quantity": item.cantidad,
+                    "currency_id": "CLP",
+                    "unit_price": float(item.producto.precio),
+                }
+                for item in carrito.items.all()
+            ],
+            "payer": {
+                "email": request.user.email,
+            },
+            "back_urls": {
+                "success": request.build_absolute_uri("/pedidos/pagos/exito/"),
+                "failure": request.build_absolute_uri("/pedidos/pagos/error/"),
+                "pending": request.build_absolute_uri("/pedidos/pagos/pendiente/"),
+            },
+            "auto_return": "approved",
+        }
+
+        # Llamar al SDK para crear la preferencia
+        response = sdk.preference().create(preference_data)
+        preference = response.get("response", {})
+
+        # Redirigir al cliente al init_point de Mercado Pago
+        if "init_point" in preference:
+            return redirect(preference["init_point"])
+        else:
+            messages.error(request, "No se pudo generar el enlace de pago.")
+            return redirect('ver_carrito')
+    except Exception as e:
+        print(f"Error en checkout_pro: {e}")
+        messages.error(request, "Ocurrió un error al procesar el pago.")
+        return redirect('ver_carrito')
+
+
+
+def pago_exitoso(request):
+    return render(request, "pagos/exito.html")
+
+def pago_error(request):
+    return render(request, "pagos/error.html")
+
+def pago_pendiente(request):
+    return render(request, "pagos/pendiente.html")

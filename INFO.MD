@@ -37,3 +37,15 @@
 # 5432
 
 <!-- <button class="btn btn-secondary mb-3" onclick="location.href='{% url 'home' %}'">Volver atrás</button> -->
+
+# credenciales Vendedor
+
+# Usuario: TESTUSER1976728519
+
+# Contraseña: g7xIRlanBY
+
+# credenciales Comprador
+
+# Usuario: TESTUSER882664685
+
+# Contraseña: mlkFNlYvuJ

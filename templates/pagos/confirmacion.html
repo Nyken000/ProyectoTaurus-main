@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Pedido</title>
+</head>
+<body>
+    <div style="text-align: center; margin-top: 50px;">
+        <h1>Confirmación de Pedido</h1>
+        <p>Descripción: {{ descripcion }}</p>
+        <p>Monto Total: ${{ monto }}</p>
+        <p>Correo: {{ email }}</p>
+        <form method="POST" action="{% url 'checkout_pro' %}">
+            {% csrf_token %}
+            <input type="hidden" name="descripcion" value="{{ descripcion }}">
+            <input type="hidden" name="monto" value="{{ monto }}">
+            <input type="hidden" name="email" value="{{ email }}">
+            <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">Ir al Pago</button>
+        </form>
+    </div>
+</body>
+</html>
